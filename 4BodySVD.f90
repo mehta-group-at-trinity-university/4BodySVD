@@ -53,7 +53,7 @@ program SVD
   write(6,*) "mu4 = ", mu4
   massarray = (/m1,m2,m3,m4/)
   Outputfile = "Eigenvals.dat"!"eigenVals-100x100x100x20x5-HHHHOdd.dat"
-  open(unit=1,file=Outputfile)
+  open(unit=9,file=Outputfile)
 
   call system_clock(Tstart)
 
@@ -201,11 +201,11 @@ program SVD
   call system_clock(Tend,rate)
   write(6,*) info
   write(6,*) (Tend-Tstart)/rate
-  write(1,*) '#',(Tend-Tstart)/rate, numstates, Uad(sRc,1,1)
+  write(9,*) '#',(Tend-Tstart)/rate, numstates, Uad(sRc,1,1)
 
   do i=1,probsize
-     write(1,*) EVals(i)
-     !write(301,*) (EVecs(i,j),j=1,probsize)
+     write(9,*) i, EVals(i)
+    !write(301,*) (EVecs(i,j),j=1,probsize)
   end do
   wfnfile = "wfn"
   do ivec = 1, 20

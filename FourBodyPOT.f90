@@ -9,7 +9,7 @@
       double precision c0, cutoff, potvalue, r12, r13, r14, r23, r24, r34,dd,r0,a,L
 !      double precision v1,v2,v3,v4,v5,v6
       double precision V2Depth
-!      double precision rvec(161),vvec(161)
+      double precision rvec(161),vvec(161)
 
 !      common /vindex/ index(67,3)
       
