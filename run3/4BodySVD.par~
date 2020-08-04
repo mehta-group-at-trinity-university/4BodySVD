@@ -1,11 +1,22 @@
 xPoints (phi)		yPoints (theta)
-60			60
+100			100
 
-LobattoPoints		NumChannels
-64			20
+LobattoPoints		NumChannels	Order
+100			200		7
 
-PotentialDepth		Rmax
-20.d0			20.d0
+PotentialDepth		Rmin		Rmax		alpha (turns V on and off)
+75.d0			0d0		10.d0		1.d0
 
 m1		m2		m3		m4
-1.d0		1.d0		1.d0		1.d0
+1.d0		1.d0		1.0d0		1.0d0
+
+xMin		xMax		yMin		yMax   (enter in units of pi)
+0d0		0.5d0		0d0 		0.5d0
+
+Left		Right		Bot		Top
+0		0		2		1
+
+
+
+!  At top -- Phi(theta=pi/2,phi)=0 for odd parity so choose Top = 0
+      	     Phi'(theta=pi/2,phi)=0 for even parity so choose Top = 1

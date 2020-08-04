@@ -164,37 +164,6 @@ program SVD
      end do
   end do
 
-!!!!!!
-  !Hamiltonian symmetry check
-!!$     k=0
-!!$     do i=1,sRc
-!!$        do nu=1,numStates
-!!$           do mu=1,numStates
-!!$              inu=indexOf(i,nu)
-!!$              jmu=indexOf(i,mu)
-!!$              if(O(inu,jmu) .ne. O(inu,jmu) )  then
-!!$                 k=k+1
-!!$                 write(6,*) O(inu,jmu)
-!!$              endif
-!!$           end do
-!!$        end do
-!!$     end do
-!!$     write(6,*) "DIFFS"
-!!$     do i=1,sRc
-!!$        do nu=1,numStates
-!!$           !do j=1,sRc
-!!$           !do mu=1,numStates
-!!$           inu=indexOf(i,nu)
-!!$           jmu=indexOf(i+1,nu)
-!!$           write(6,*) O(inu,jmu)-O(jmu,inu)
-!!$           !if (O(inu,jmu) .ne. O(jmu,inu)) k=k+1
-!!$           !end do
-!!$           !end do
-!!$        end do
-!!$     end do
-!!$     write(6,*) k
-!!$!!!!!
-
   write(6,*) "About to diagonalize the Hamiltonian. problem size = ", probsize
   call Mydsyev(H,probsize,EVals,EVecs)
 

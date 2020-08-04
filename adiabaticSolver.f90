@@ -33,7 +33,8 @@ Subroutine adiabaticSolver(NumStates,PsiFlag,CouplingFlag,LegendreFile,LegPoints
   double precision, allocatable :: u(:,:,:),uxx(:,:,:),v(:,:,:)
   double precision, allocatable :: vy(:,:,:),vyy(:,:,:)
   double precision, allocatable :: H(:,:),Vmid(:,:,:),Vexp(:,:,:)
-  double precision, allocatable :: mPsi(:,:),lPsi(:,:),rPsi(:,:)
+!  double precision, allocatable :: mPsi(:,:),lPsi(:,:),rPsi(:,:)
+  double precision, allocatable :: mPsi(:,:)
   double precision :: Psi(RSteps,psiDim,eDim),Uad(RSteps,eDim,2),S(sDim,psiDim)
   double precision, allocatable ::P(:,:),Q(:,:),dP(:,:),Energies(:,:)
   double precision r0
@@ -109,7 +110,8 @@ Subroutine adiabaticSolver(NumStates,PsiFlag,CouplingFlag,LegendreFile,LegPoints
   allocate(LUFac(LeadDim,MatrixDim))
   allocate(workl(ncv*ncv+8*ncv))
   allocate(workd(3*MatrixDim))
-  allocate(lPsi(MatrixDim,ncv),rPsi(MatrixDim,ncv),mPsi(MatrixDim,ncv))
+!  allocate(lPsi(MatrixDim,ncv),rPsi(MatrixDim,ncv),mPsi(MatrixDim,ncv))
+  allocate(mPsi(MatrixDim,ncv))
   allocate(Residuals(MatrixDim))
   allocate(Energies(ncv,2))
   info=0
@@ -136,7 +138,7 @@ Subroutine adiabaticSolver(NumStates,PsiFlag,CouplingFlag,LegendreFile,LegPoints
      if (info.ne.0) write(6,*) 'Error in MyDsband.  info = ',info
      
      
-     if (iR .ne. 1) then
+     if (iR .gt. 1) then
         call FixPhase(NumStates,HalfBandWidth,MatrixDim,S,ncv,Psi(iR-1,:,:),mPsi)
      endif
      
@@ -191,7 +193,7 @@ Subroutine adiabaticSolver(NumStates,PsiFlag,CouplingFlag,LegendreFile,LegPoints
   deallocate(LUFac)
   deallocate(workl)
   deallocate(workd)
-  deallocate(lPsi,rPsi)
+!  deallocate(lPsi,rPsi)
   deallocate(Residuals)
   deallocate(P,Q,dP)
   deallocate(xPoints,yPoints)

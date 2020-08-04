@@ -6,5 +6,5 @@ ARPACK =  -L/opt/ARPACK/ -larpack_Intel
 INCLUDE =  -I/usr/local/include
 
 4BodySVD.x:	4BodySVD.f90 adiabaticSolver.f90 Bsplines.f90 FourBodyPOT.f90 matrix_stuff.f
-	${CMP} ${OPTFLAG} ${F132FORM} ${INCLUDE}  4BodySVD.f90 adiabaticSolver.f90 Bsplines.f90 FourBodyPOT.f90 matrix_stuff.f ${ARPACK} ${LAPACK} 
+	${CMP} ${OPTFLAG} ${F132FORM} ${INCLUDE}  4BodySVD.f90 adiabaticSolver.f90 Bsplines.f90 FourBodyPOT.f90 matrix_stuff.f ${ARPACK} ${LAPACK} -o 4BodySVD.x
 

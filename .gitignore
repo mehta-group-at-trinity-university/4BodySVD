@@ -29,8 +29,13 @@
 # Executables
 *.out
 *.x
+**/*.x
 
 #data files
 fort.*
 wfn*.dat
+**/wfn*.dat
 *.output
+**/*.output
+*.tar
+**/*.tar
