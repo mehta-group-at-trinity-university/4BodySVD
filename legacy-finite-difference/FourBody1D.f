@@ -37,10 +37,6 @@
 
       character*64 LegendreFile
 
-c     -- Initialization of Jeff Stephen's h3plus potential routine:
-c      call label
-c     -- See R. Jaquet, W. Cencek, W. Kutzelnigg, J. Rychlewski, JCP 108, 2837 ('98)
-
 c     read in number of energies and states to print
       read(5,*)
       read(5,*) NumStates,PsiFlag,CouplingFlag
@@ -92,17 +88,18 @@ c     read in grid information
       write(6,*) RSteps,RDerivDelt,RFirst,RLast
 c     c	XFirst=dsqrt(RFirst)
 c     c	XLast=dsqrt(RLast)
-c     c	XFirst=RFirst**(1.d0/3.d0)
-c     c	XLast=RLast**(1.d0/3.d0)
-      XFirst = dlog10(RFirst)
-      XLast = dlog10(RLast)
+      XFirst=RFirst**(1.d0/3.d0)
+      XLast=RLast**(1.d0/3.d0)
+c     XFirst = dlog10(RFirst)
+c      XLast = dlog10(RLast)
       StepX=(XLast-XFirst)/(RSteps-1.d0)
       
       allocate(R(RSteps))
       do i = 1,RSteps
 c     read(5,*) R(i)
-c     R(i)= (XFirst+(i-1)*StepX)**3
-         R(i)= 10.d0**(XFirst+(i-1)*StepX)
+         R(i)= (XFirst+(i-1)*StepX)**3
+c     R(i)= 10.d0**(XFirst+(i-1)*StepX)
+c         R(i) = RFirst + (i-1)*(RLast - RFirst)/dble(RSteps-1) ! linear radial grid
       enddo
 
       if (mod(xNumPoints,2) .ne. 0) then
@@ -119,7 +116,7 @@ c     R(i)= (XFirst+(i-1)*StepX)**3
 
       RLeft = 0.0d0
 c     u1 = sys_ss_pot(RLeft,v1,2,.TRUE.)
-      u1 = 0.1d0*dexp(Rleft)
+c      u1 = 0.1d0*dexp(Rleft)
 c     mu = m/dsqrt(3.0d0)
 c     mu = m/(4.d0**(1.d0/3.d0))
 c     mu=0.5
@@ -171,26 +168,27 @@ c     mu=2.d0*mu12
       allocate(Residuals(MatrixDim))
       allocate(Energies(ncv,2))
       info=0
-      call GridMaker(m,mu, R(1),11.65d0,xNumPoints,xMin,xMax,
-     >     yNumPoints,yMin,yMax,xPoints,yPoints)
-      print*, "after gridmaker..."
-      call CalcBasisFuncs(Left,Right,Order,xPoints,LegPoints,xLeg,
-     >     xDim,xBounds,xNumPoints,0,u)
-      call CalcBasisFuncs(Left,Right,Order,xPoints,LegPoints,xLeg,
-     >     xDim,xBounds,xNumPoints,2,uxx)
-      call CalcBasisFuncs(Bottom,Top,Order,yPoints,LegPoints,xLeg,
-     >     yDim,yBounds,yNumPoints,0,v)
-      call CalcBasisFuncs(Bottom,Top,Order,yPoints,LegPoints,xLeg,
-     >     yDim,yBounds,yNumPoints,1,vy)
-      call CalcBasisFuncs(Bottom,Top,Order,yPoints,LegPoints,xLeg,
-     >     yDim,yBounds,yNumPoints,2,vyy)
-      
-      call CalcOverlap(Order,xPoints,yPoints,LegPoints,xLeg,wLeg,
-     >     xDim,yDim,
-     >     xNumPoints,yNumPoints,u,v,
-     >     xBounds,yBounds,HalfBandWidth,S)
-      
+         call GridMaker(m,mu,R(iR),11.65d0,xNumPoints,xMin,xMax,
+     >        yNumPoints,yMin,yMax,xPoints,yPoints)
+
+         call CalcBasisFuncs(Left,Right,Order,xPoints,LegPoints,xLeg,
+     >        xDim,xBounds,xNumPoints,0,u)
+         call CalcBasisFuncs(Left,Right,Order,xPoints,LegPoints,xLeg,
+     >        xDim,xBounds,xNumPoints,2,uxx)
+         call CalcBasisFuncs(Bottom,Top,Order,yPoints,LegPoints,xLeg,
+     >        yDim,yBounds,yNumPoints,0,v)
+         call CalcBasisFuncs(Bottom,Top,Order,yPoints,LegPoints,xLeg,
+     >        yDim,yBounds,yNumPoints,1,vy)
+         call CalcBasisFuncs(Bottom,Top,Order,yPoints,LegPoints,xLeg,
+     >        yDim,yBounds,yNumPoints,2,vyy)
+         
+         call CalcOverlap(Order,xPoints,yPoints,LegPoints,xLeg,wLeg,
+     >        xDim,yDim,
+     >        xNumPoints,yNumPoints,u,v,
+     >        xBounds,yBounds,HalfBandWidth,S)
+
       do iR = 1,RSteps
+
 
          if (CouplingFlag .ne. 0) then
 
@@ -207,13 +205,13 @@ c     mu=2.d0*mu12
             if (iR .gt. 1) then 
                call FixPhase(NumStates,HalfBandWidth,
      >              MatrixDim,S,ncv,mPsi,lPsi)
-               write(6,*) 'Finished with FixPhase at RLeft.'
+!               write(6,*) 'Finished with FixPhase at RLeft.'
             endif
 
             call CalcEigenErrors(info,iparam,MatrixDim,H,
      >           HalfBandWidth+1,
      >           S,HalfBandWidth,NumStates,lPsi,Energies,ncv)
-            IF(R(iR).GT. 20.d0) Shift = 1.05d0*Energies(1,1)
+!            IF(R(iR).GT. 2.d0) Shift = 1.05d0*Energies(1,1)
 !            do i = 1,min(NumStates,iparam(5))
 c     Energies(i,1) = Energies(i,1) + 1.875d0/(mu*RLeft*RLeft)
 !            enddo
@@ -238,11 +236,11 @@ c     Energies(i,1) = Energies(i,1) + 1.875d0/(mu*RLeft*RLeft)
             if (info.ne.0) write(6,*) 'Error in MyDsband.  info = ',info
             call FixPhase(NumStates,HalfBandWidth,MatrixDim,S,ncv,
      >           lPsi,rPsi)
-            write(6,*) 'Finished with FixPhase at RRight.'
+!            write(6,*) 'Finished with FixPhase at RRight.'
             call CalcEigenErrors(info,iparam,MatrixDim,H,
      >           HalfBandWidth+1,
      >           S,HalfBandWidth,NumStates,rPsi,Energies,ncv)
-            IF(R(iR).GT. 2.2d0) Shift = 0.93d0*Energies(1,1)
+!            IF(R(iR).GT. 2.2d0) Shift = 0.93d0*Energies(1,1)
 !            do i = 1,min(NumStates,iparam(5))
 c     Energies(i,1) = Energies(i,1) + 1.875d0/(mu*RRight*RRight)
 !            enddo
@@ -268,12 +266,12 @@ c     Energies(i,1) = Energies(i,1) + 1.875d0/(mu*RRight*RRight)
          if (CouplingFlag .ne. 0) then 
             call FixPhase(NumStates,HalfBandWidth,
      >           MatrixDim,S,ncv,rPsi,mPsi)
-            write(6,*) 'Finished with FixPhase at RRight.'
+!            write(6,*) 'Finished with FixPhase at RRight.'
          endif
 
          call CalcEigenErrors(info,iparam,MatrixDim,H,HalfBandWidth+1,S,
      >        HalfBandWidth,NumStates,mPsi,Energies,ncv)
-         IF(R(iR).GT. 2.2d0) Shift = 0.93d0*Energies(1,1)
+!         IF(R(iR).GT. 2.2d0) Shift = 0.93d0*Energies(1,1)
          do i = 1,min(NumStates,iparam(5))
 
 c     Energies(i,1) = Energies(i,1) + 1.875d0/(mu*R(iR)*R(iR))
@@ -344,7 +342,7 @@ c     call CalcQMatrix(min(NumStates,iparam(5)),HalfBandWidth,MatrixDim,RDerivDe
 
       subroutine CalcOverlap(Order,xPoints,yPoints,LegPoints,xLeg,wLeg,xDim,yDim,
      >     xNumPoints,yNumPoints,u,v,xBounds,yBounds,HalfBandWidth,S)
-
+      implicit none
       integer Order,LegPoints,xDim,yDim,xNumPoints,yNumPoints,
      >     xBounds(xNumPoints+2*Order),yBounds(yNumPoints+2*Order),HalfBandWidth
       double precision xPoints(*),yPoints(*),xLeg(*),wLeg(*)
@@ -576,10 +574,8 @@ c     siny(ly,ky) = dsin(4.0d0*y)
                   ap = wLeg(ly)*yIntScale(ky)*vy(ly,ky,iy)
                   b = a*v(ly,ky,iyp)
                   bp = ap*vy(ly,ky,iyp)
-c     yTempF = yTempF + b*tany(ly,ky)
                   yTempF = yTempF + b/siny(ly,ky)
-c     yTempT = yTempT + a*(siny(ly,ky)*vyy(ly,ky,iyp)+cosy(ly,ky)*vy(ly,ky,iyp))
-                  yTempT = yTempT + bp*siny(ly,ky)
+                  yTempT = yTempT + a*(siny(ly,ky)*vyy(ly,ky,iyp)+cosy(ly,ky)*vy(ly,ky,iyp))
                enddo
                yF(iyp,iy) = yF(iyp,iy) + yTempF
                yT(iyp,iy) = yT(iyp,iy) + yTempT
@@ -597,7 +593,7 @@ c     yTempT = yTempT + a*(siny(ly,ky)*vyy(ly,ky,iyp)+cosy(ly,ky)*vy(ly,ky,iyp))
                   Col = i1p+iyp
                   if (Col .ge. Row) then
                      NewRow = HalfBandWidth+1+Row-Col
-                     H(NewRow,Col) = m*(xT(ixp,ix)*yF(iyp,iy)-xS(ixp,ix)*yT(iyp,iy))
+                     H(NewRow,Col) = m*(xT(ixp,ix)*yF(iyp,iy) + xS(ixp,ix)*yT(iyp,iy))
                   endif
                enddo
             enddo
@@ -607,42 +603,18 @@ c     yTempT = yTempT + a*(siny(ly,ky)*vyy(ly,ky,iyp)+cosy(ly,ky)*vy(ly,ky,iyp))
 c     if potential integral is not separable, use the following code section
 c     to do 2D integrals
 
-!      Rall = R/dsqrt(dsqrt(3.0d0))
-
-!      write(6,*) 'r0diatom=',r0diatom,' Rall=',Rall,' dDiatom=',dDiatom
-
       do kx = 1,xNumPoints-1
          do ky = 1,yNumPoints-1
             do lx = 1,LegPoints
                do ly = 1,LegPoints
-c     r12 = Rall*dsqrt(1.0d0+cos2y(ly,ky)*cos2x0(lx,kx))
                   r12 = (2.d0*R*cosx(lx,kx)*siny(ly,ky))/dsqrt(2.d0)
                   r34 = (2.d0*R*sinx(lx,kx)*siny(ly,ky))/dsqrt(2.d0)
                   r13 = (dsqrt(2.d0)*R*cosy(ly,ky) + R*siny(ly,ky)*(cosx(lx,kx)-sinx(lx,kx)))/dsqrt(2.d0)
                   r14 = (dsqrt(2.d0)*R*cosy(ly,ky) + R*siny(ly,ky)*(cosx(lx,kx)+sinx(lx,kx)))/dsqrt(2.d0)
                   r23 = (dsqrt(2.d0)*R*cosy(ly,ky) - R*siny(ly,ky)*(cosx(lx,kx)+sinx(lx,kx)))/dsqrt(2.d0)
                   r24 = (dsqrt(2.d0)*R*cosy(ly,ky) + R*siny(ly,ky)*(-cosx(lx,kx)+sinx(lx,kx)))/dsqrt(2.d0)
-c     c          u1 = sys_ss_pot(r12,v12,2,.FALSE.)
-cccc  v12 = dexp(-r12**2/200.d0)
-cccc  v12 = -dDiatom/(dcosh(r12/r0diatom))**2
-cccc  v12 = Vpot(r12)
-c     r23 = Rall*dsqrt(1.0d0+cos2y(ly,ky)*cos2xp(lx,kx))
-cccc  u1 = sys_ss_pot(r23,v23,2,.FALSE.)
-cccc  v23 = dexp(-r23**2/200.d0)
-cccc  v23 = -dDiatom/(dcosh(r23/r0diatom))**2
-cccc  v23 = Vpot(r23)
-c     r13 = Rall*dsqrt(1.0d0+cos2y(ly,ky)*cos2xm(lx,kx))
-cccc  u1 = sys_ss_pot(r13,v31,2,.FALSE.)
-cccc  v31 = dexp(-r13**2/200.d0)
-cccc  v31 = -dDiatom/(dcosh(r13/r0diatom))**2
-cccc  v31 = Vpot(r13)
-c     call  h3ppot(r12, r13, r23, potvalue)
                   call  sumpairwisepot(r12, r13, r14, r23, r24, r34, potvalue)
                   Pot(ly,lx,ky,kx) = alpha*potvalue
-c     Pot(ly,lx,ky,kx) = 0.d0
-ccc   Pot(ly,lx,ky,kx) = alpha*(V12+V23+V31)
-ccc   Pot(ly,lx,ky,kx) = alpha*(V12*V23*V31)
-ccc   Pot(ly,lx,ky,kx) = alpha*(1.d0/r12**2+1.d0/r23**2+1.d0/r13**2)
                enddo
             enddo
          enddo
@@ -698,7 +670,7 @@ c                     write(25,*) ix,ixp,H(NewRow,Col)
 
       return
       end
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       subroutine CalcPMatrix(NumStates,HalfBandWidth,MatrixDim,RDelt,lPsi,mPsi,rPsi,S,P)
 
@@ -730,7 +702,7 @@ c                     write(25,*) ix,ixp,H(NewRow,Col)
 
       return
       end
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine CalcQMatrix(NumStates,HalfBandWidth,MatrixDim,RDelt,lPsi,mPsi,rPsi,S,Q)
       
       integer NumStates,HalfBandWidth,MatrixDim
@@ -761,7 +733,7 @@ c                     write(25,*) ix,ixp,H(NewRow,Col)
       
       return
       end
-      
+c      cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine FixPhase(NumStates,HalfBandWidth,MatrixDim,S,ncv,mPsi,rPsi)
       
       integer NumStates,HalfBandWidth,MatrixDim,ncv
@@ -946,7 +918,7 @@ c                     write(25,*) ix,ixp,H(NewRow,Col)
       
 
       subroutine GridMaker(m,mu,R,r0,xNumPoints,xMin,xMax,yNumPoints,yMin,yMax,xPoints,yPoints)
-      implicit none
+
       integer xNumPoints,yNumPoints
       double precision m,mu,R,r0,xMin,xMax,yMin,yMax,xPoints(xNumPoints),yPoints(yNumPoints)
 
@@ -1185,6 +1157,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       return
       end
+c      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       Double Precision Function Vpot95(r)
       implicit real*8(a-h,o-z)
       double precision eps,D,c6,c8,c10,Astar,alpha,beta
