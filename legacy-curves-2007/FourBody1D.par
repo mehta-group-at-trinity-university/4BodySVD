@@ -1,0 +1,37 @@
+Number of energies       Number of states      Coupling Matrix
+      40                         0                     1
+
+Legendre File
+Legendre.dat
+
+Legendre Points
+     10
+
+ Shift    Order    Left Right Bottom Top
+-0.1d0     5         0    0       2    1
+
+   alpha          m           r0diatom     etaOVERpi
+  1.0000d0       1.0d0        5.d0        0.345643
+
+xPoints
+  300     0.0d0         1.570796326794897
+
+yPoints
+  300     0.0d0         1.570796326794897
+
+ RSteps   RDerivDelt     RFirst    RLast
+   80        0.0001d0    20.0d0    400.0d0
+
+
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c	the boundary conditions should be as follows     c
+c							 c
+c							 c
+c                  Left Right Bottom Top		 c
+c  even parity:	   0	0     2	     0			 c
+c  odd parity:	   0	0     2	     1			 c
+c							 c
+c							 c
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+							
