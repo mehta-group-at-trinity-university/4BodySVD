@@ -217,7 +217,7 @@ program SVD
      !          write(file,10) nodesR(iR+1), (evecs(indexOf(iR,nu),ivec)/sqrt(weightsR(iR+1)), nu = 1, NumStates)
      !      enddo
      !        close(9999+ifile)
-     call Plotwfn(ivec,indexOf,nodesR,weightsR,sr,src,NumStates,probsize,EVecs,wfnout)
+     call Plotwfn(ivec,indexOf,nodesR,weightsR,sr,src,NumStates,probsize,EVecs,EVals,wfnout)
 
   enddo
 10 format(1P,2000e16.8)     
@@ -249,15 +249,15 @@ program SVD
 
 end program SVD
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine Plotwfn(ivec,indexOf,nodesR,weightsR,ngl,nR,NumStates,probsize,evecs,wfnfile)
+subroutine Plotwfn(ivec,indexOf,nodesR,weightsR,ngl,nR,NumStates,probsize,evecs,evals,wfnfile)
   implicit none
   integer ivec,nu,iR,ngl,NumStates,nR,probsize,inu,indexOf(nR,NumStates)
-  real*8 nodesR(ngl),weightsR(ngl),evecs(probsize,probsize)
+  real*8 nodesR(ngl),weightsR(ngl),evecs(probsize,probsize),evals(probsize)
   character*64 wfnfile
   !  write(6,*) file
   open(unit=8,file=wfnfile)
   do iR = 1, nR
-     write(8,10) nodesR(iR+1), (evecs(indexOf(iR,nu),ivec)*sqrt(weightsR(iR+1)), nu = 1, NumStates)
+     write(8,10) nodesR(iR+1), (evecs(indexOf(iR,nu),ivec)*sqrt(weightsR(iR+1))+evals(ivec), nu = 1, NumStates)
   enddo
   close(8)
 10 format(1P,2000e16.8)

@@ -1,6 +1,6 @@
 
       
-      subroutine sumpairwisepot(r12, r13, r14, r23, r24, r34, V2Depth, potvalue,rvec,vvec) 
+      subroutine sumpairwisepot(r12, r13, r14, r23, r24, r34, V2Depth, potvalue,rvec,vvec,r0) 
       
 !     returns the value of the sum of pair-wise interactions 
       
@@ -50,14 +50,14 @@
 !
 ! Morse Potential
       dd=V2Depth
-      r0=1.0d0
-      a=1.0d0
-      potvalue = dd*((1-exp(-a*(r12-r0)))**(2.0d0)) - dd + &
-          dd*((1d0 - exp(-a*(r13-r0)))**(2.0d0)) - dd + &
-          dd*((1d0 - exp(-a*(r34-r0)))**(2.0d0)) - dd + &
-          dd*((1d0 - exp(-a*(r23-r0)))**(2.0d0)) - dd + &
-          dd*((1d0 - exp(-a*(r24-r0)))**(2.0d0)) - dd + &
-          dd*((1d0 - exp(-a*(r14-r0)))**(2.0d0)) - dd
+!      r0=1.0d0
+      !a=1.0d0
+      potvalue = dd*((1-exp(-(r12/r0-1d0)))**(2.0d0)) - dd + &
+          dd*((1d0 - exp(-(r13/r0-1d0)))**(2.0d0)) - dd + &
+          dd*((1d0 - exp(-(r34/r0-1d0)))**(2.0d0)) - dd + &
+          dd*((1d0 - exp(-(r23/r0-1d0)))**(2.0d0)) - dd + &
+          dd*((1d0 - exp(-(r24/r0-1d0)))**(2.0d0)) - dd + &
+          dd*((1d0 - exp(-(r14/r0-1d0)))**(2.0d0)) - dd
 
      !      dd=V2Depth
 !      potvalue=-dd*(dcosh(r12/L)**(-2.0d0) + 

@@ -1267,6 +1267,7 @@ subroutine CalcCoupling(NumStates,HalfBandWidth,MatrixDim,RDelt,lPsi,mPsi,rPsi,S
 
   return
 end subroutine CalcCoupling
+!cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 Double Precision Function Vpot95(r)
   implicit real*8(a-h,o-z)
   double precision eps,D,c6,c8,c10,Astar,alpha,beta
